@@ -1,0 +1,105 @@
+<div class="grid">
+    <div class="col-12 md:col-12">
+        <div class="card">
+            <div class="card-header">
+                Charges
+                <div class="card-header-actions">
+
+                    <div class="flex flex-wrap gap-2">
+
+                        <button pButton pRipple title="Yenile" (click)="findRoles()" icon="pi pi-refresh"></button>
+                        <button pButton pRipple title="Kaydet" (click)="saveRoles()" icon="pi pi-save"></button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Price</th>
+                                <th>Active</th>
+                                <th>
+                                    <div class="col-sm-12 col-md-2">
+                                        <button class="btn btn-primary" (click)="addNewRole()">
+                                            <i class="fa fa-plus"></i></button>
+                                    </div>
+                                </th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <ng-container *ngFor="let roleModel of roleList; let i = index;">
+                                <tr [ngClass]="{'deleted': roleModel.rev===2,'changed' :roleModel.rev===1}">
+
+                                    <td>
+                                        <input type="text" class="form-control" [(ngModel)]="roleModel.id"
+                                               disabled="true"/>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control" [(ngModel)]="roleModel.roleName"
+                                               (change)="changeRole(roleModel)"/>
+                                    </td>
+                                </tr>
+                            </ng-container>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="col-12">
+    <div class="card">
+        <h5>Filter Menu</h5>
+        <p-table #dt1 [value]="roleList" dataKey="id" [rows]="10" [loading]="loading" [rowHover]="true" styleClass="p-datatable-gridlines" [paginator]="true" [globalFilterFields]="['id','roleName']" responsiveLayout="scroll">
+            <ng-template pTemplate="caption">
+                <div class="flex justify-content-between flex-column sm:flex-row">
+                    <button pButton pRipple title="Yenile" (click)="findRoles()" icon="pi pi-refresh"></button>
+                    <button pButton pRipple title="Kaydet" (click)="saveRoles()" icon="pi pi-save"></button>
+                </div>
+            </ng-template>
+            <ng-template pTemplate="header">
+                <tr>
+                    <th>
+                        <div class="flex justify-content-between align-items-center">
+                            Name
+                            <p-columnFilter type="text" field="id" display="menu" placeholder="Numaraya göre ara"></p-columnFilter>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="flex justify-content-between align-items-center">
+                            Country
+                            <p-columnFilter type="text" field="roleName" display="menu" placeholder="İsme göre ara"></p-columnFilter>
+                        </div>
+                    </th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-customer>
+                <tr>
+                    <td>
+                        {{customer.id}}
+                    </td>
+
+                    <td>
+                        {{customer.roleName}}
+                    </td>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+                <tr>
+                    <td colspan="8">Rol Bulunamadı.</td>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="loadingbody">
+                <tr>
+                    <td colspan="8">Rol yükleniyor.</td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+
+</div>
