@@ -1,1 +1,30 @@
 /.angular/cache/
+
+/dist
+/dist-server
+/tmp
+/out-tsc
+
+
+/.idea
+.project
+.classpath
+
+# dependencies
+/node_modules
+
+# IDE - VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# e2e
+/e2e/*.js
+/e2e/*.map
+
+# System Files
+.DS_Store
+Thumbs.db
+debug.log
