@@ -10,6 +10,7 @@ import {IsAuthed} from "./auth/guards/authguard";
             {
                 path: 'member', component: AppLayoutComponent, //canActivate: [IsAuthed],
                 children: [
+                    { path:'map', loadChildren:()=>import('./konumsal/map/map.module').then(m=>m.MapModule)},
                     { path: '', loadChildren: () => import('./fw/components/dashboard/dashboard.module').then(m => m.DashboardModule) },
                     { path: 'uikit', loadChildren: () => import('./fw/components/uikit/uikit.module').then(m => m.UIkitModule) },
                     { path: 'utilities', loadChildren: () => import('./fw/components/utilities/utilities.module').then(m => m.UtilitiesModule) },
@@ -26,7 +27,7 @@ import {IsAuthed} from "./auth/guards/authguard";
             },
             { path: 'auth', loadChildren: () => import('./fw/components/auth/auth.module').then(m => m.AuthModule) },
             { path: 'landing', loadChildren: () => import('./fw/components/landing/landing.module').then(m => m.LandingModule) },
-            { path: '', loadChildren: () => import('./fw/components/landing/landing.module').then(m => m.LandingModule) },
+            { path: '',loadChildren: () => import('./fw/components/landing/landing.module').then(m => m.LandingModule) },
             { path: 'notfound', component: NotfoundComponent },
             { path: '**', redirectTo: '/notfound' },
         ], { scrollPositionRestoration: 'enabled', anchorScrolling: 'enabled', onSameUrlNavigation: 'reload' })

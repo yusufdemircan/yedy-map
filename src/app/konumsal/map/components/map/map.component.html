@@ -1,0 +1,21 @@
+<div class="grid p-fluid">
+    <div class="col-12">
+        <div class="card">
+            <h5>Map</h5>
+            <div class="grid formgrid">
+
+                <div class="col-12 ml-3 mb-2 lg:col-4 lg:mb-0">
+                    <p-dropdown (onChange)="changeDrop()" [options]="['Point','LineString','Polygon','Circle','None']"
+                                [(ngModel)]="selectedDrop"
+                                placeholder="Select a Draw" [showClear]="true"></p-dropdown>
+                </div>
+                <div class="col-2 ml-3 mb-2 lg:col-4 lg:mb-0 ">
+                    <p-button (onClick)="undoLastDraw()" icon="pi pi-undo"></p-button>
+                </div>
+            </div>
+            <div class="col-12 mb-2 lg:col-12 lg:mb-0">
+                <div id="map" class="map"></div>
+            </div>
+        </div>
+    </div>
+</div>

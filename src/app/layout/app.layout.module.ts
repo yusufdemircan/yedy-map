@@ -43,6 +43,6 @@ import {MenuModule} from "primeng/menu";
         RippleModule,
         RouterModule
     ],
-    exports: [AppLayoutComponent]
+    exports: [AppLayoutComponent, AppMenuitemComponent]
 })
 export class AppLayoutModule { }

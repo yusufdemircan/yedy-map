@@ -14,9 +14,10 @@ import { PhotoService } from './fw/service/photo.service';
 import {AuthService} from "./auth/service/authservice";
 import { MenuModule } from 'primeng/menu';
 
+
 @NgModule({
     declarations: [
-        AppComponent, NotfoundComponent
+        AppComponent, NotfoundComponent,
     ],
     imports: [
         AppRoutingModule,
