@@ -89,7 +89,7 @@ export class MapComponent implements OnInit, AfterViewInit {
         this.ogmLayer = new VectorLayer({
             source:this.ogmSource,
             style: {
-                'fill-color': 'rgba(255,255,255,0.45)',
+                'fill-color': 'rgba(255,0,0,0.03)',
                 'stroke-color': '#e10c0c',
                 'stroke-width': 2,
             },
@@ -144,7 +144,7 @@ export class MapComponent implements OnInit, AfterViewInit {
             style: {
                 'fill-color': 'rgba(0,78,255,0)',
                 'stroke-color': '#5000ff',
-                'stroke-width': 10,
+                'stroke-width': 4,
 
             },
             opacity:0.5,
@@ -222,7 +222,6 @@ export class MapComponent implements OnInit, AfterViewInit {
     }
 
     changeLayer(event:any){
-
         this.map.getMap().getLayers().forEach(f=>{
             console.log(f)
             if(this.selectedLayer.includes(f.getClassName())){
