@@ -1,0 +1,20 @@
+<div class="custom-card">
+    <a id="image-download" download="map.png"></a>
+    <p-tabView (onChange)="changedPanel($event)">
+        <p-tabPanel *ngFor="let item of items">
+            <ng-template pTemplate="header">
+                <i style="margin-right:15px" class="{{item.icon}}"></i>
+                <span>{{item.label}}</span>
+            </ng-template>
+            <p-tabMenu *ngIf="item.subItems" [model]="item.subItems" (activeItemChange)="onActiveItemChange($event)"></p-tabMenu>
+        </p-tabPanel>
+    </p-tabView>
+</div>
+
+
+
+
+
+
+
+

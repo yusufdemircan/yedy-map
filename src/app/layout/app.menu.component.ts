@@ -23,7 +23,10 @@ export class AppMenuComponent implements OnInit {
             {
                 label: 'Map',
                 items: [
-                    { label: 'Openlayers Map', icon: 'pi pi-map-marker', routerLink: ['/member/map'] }
+                    { label: 'Openlayers Dynamic Map', icon: 'pi pi-map-marker', routerLink: ['/member/map/dynamic'] },
+                    { label: 'Openlayers Test Map', icon: 'pi pi-map-marker', routerLink: ['/member/map/test'] },
+
+
                 ]
             },
             {

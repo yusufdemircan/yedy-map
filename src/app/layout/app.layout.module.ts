@@ -41,7 +41,7 @@ import {MenuModule} from "primeng/menu";
         SidebarModule,
         RadioButtonModule,
         RippleModule,
-        RouterModule
+        RouterModule,
     ],
     exports: [AppLayoutComponent, AppMenuitemComponent]
 })

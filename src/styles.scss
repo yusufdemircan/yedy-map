@@ -12,3 +12,164 @@ $gutter: 1rem; //for primeflex grid system
 @import "assets/fw/styles/flags/flags.css";
 @import "assets/fw/styles/badges.scss";
 @import "assets/fw/styles/code.scss";
+
+
+.ol-mouse-position {
+    background: rgba(255, 255, 255, 0.69);
+    color: black;
+    text-align: center;
+    border-radius: 15px;
+    padding: 5px;
+    width: 35%;
+    font-weight:normal;
+    font-size: 12px;
+    right: 35% !important;
+    position: absolute;
+}
+
+.ol-scale-line {
+    background: rgba(128, 128, 128, 0.7) !important;
+    padding: 5px !important;
+}
+
+.ol-scale-line-inner {
+    border: 1px solid white !important;
+    border-top: none !important;
+    color: white !important;
+    font-size: 12px !important;
+}
+
+.ol-zoomslider {
+    //padding:5px !important;
+    width: 2em;
+    background: rgba(128, 128, 128, 0.7) !important;
+    top: 9.5em !important;
+    left: inherit !important;
+    right: .5em !important;
+}
+
+.ol-zoom {
+    top: 4.643em !important;
+    right: .5em !important;
+    left: inherit !important;
+}
+
+.ol-zoomslider button {
+    position: relative;
+    width: 1.8em !important;
+    height: 10px;
+}
+
+.ol-control button {
+    height: 1.375em;
+    width: 1.375em;
+    color: var(--ol-subtle-foreground-color);
+}
+
+.ol-zoom .ol-zoom-in {
+    background: rgba(128, 128, 128, 1) !important;
+    border-radius: 2px 2px 0 0;
+    width: 2em !important;
+    height: 2em !important;
+    color: white !important;
+}
+
+.ol-zoom .ol-zoom-out {
+    background: rgba(128, 128, 128, 1) !important;
+    border-radius: 0 0 2px 2px;
+    width: 2em !important;
+    height: 2em !important;
+    color: white !important
+}
+
+.ol-full-screen  button{
+    width: 2em !important;
+    height: 2em !important;
+    background: rgba(128, 128, 128, 1) !important;
+    color: white !important
+
+}
+
+.ol-tooltip {
+    position: relative;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 4px;
+    color: white;
+    padding: 4px 8px;
+    opacity: 0.7;
+    white-space: nowrap;
+    font-size: 12px;
+    cursor: default;
+    user-select: none;
+}
+.ol-tooltip-measure {
+    opacity: 1;
+    font-weight: bold;
+}
+.ol-tooltip-static {
+    background-color: #ffcc33;
+    color: black;
+    border: 1px solid white;
+}
+.ol-tooltip-measure:before,
+.ol-tooltip-static:before {
+    border-top: 6px solid rgba(0, 0, 0, 0.5);
+    border-right: 6px solid transparent;
+    border-left: 6px solid transparent;
+    content: "";
+    position: absolute;
+    bottom: -6px;
+    margin-left: -7px;
+    left: 50%;
+}
+.ol-tooltip-static:before {
+    border-top-color: #ffcc33;
+}
+
+
+.ol-popup {
+    position: absolute;
+    background-color: white;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+    padding: 15px;
+    border-radius: 10px;
+    border: 1px solid #cccccc;
+    bottom: 12px;
+    left: -50px;
+    min-width: 280px;
+}
+.ol-popup:after, .ol-popup:before {
+    top: 100%;
+    border: solid transparent;
+    content: " ";
+    height: 0;
+    width: 0;
+    position: absolute;
+    pointer-events: none;
+}
+.ol-popup:after {
+    border-top-color: white;
+    border-width: 10px;
+    left: 48px;
+    margin-left: -10px;
+}
+.ol-popup:before {
+    border-top-color: #cccccc;
+    border-width: 11px;
+    left: 48px;
+    margin-left: -11px;
+}
+.ol-popup-closer {
+    text-decoration: none;
+    position: absolute;
+    top: 2px;
+    right: 8px;
+}
+.ol-popup-closer:after {
+    content: "✖";
+}
+
+
+
+
+
