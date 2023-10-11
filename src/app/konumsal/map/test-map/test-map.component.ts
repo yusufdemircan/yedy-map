@@ -47,7 +47,7 @@ export class TestMapComponent implements OnInit{
                     'World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
             }),
         });
-        this.map.getMap().addLayer(raster)
+        //this.map.getMap().addLayer(raster)
         //this.map.getMap().addLayer(ogmLayer2)
         //this.map.getMap().addLayer(ogmLayer)
 
