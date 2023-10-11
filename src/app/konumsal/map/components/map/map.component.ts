@@ -7,6 +7,11 @@ import {Overlay} from "ol";
 import {toStringHDMS} from "ol/coordinate";
 import {toLonLat} from "ol/proj";
 import {Polygon} from "ol/geom";
+import VectorSource from "ol/source/Vector";
+import EsriJSON from "ol/format/EsriJSON";
+import {tile as tileStrategy} from "ol/loadingstrategy";
+import {createXYZ} from "ol/tilegrid";
+import VectorLayer from "ol/layer/Vector";
 
 
 interface Country {
@@ -23,17 +28,134 @@ export class MapComponent implements OnInit, AfterViewInit {
     @Input() map!: CustomMap;
     isVisibleLayers: boolean = false;
     items!: any;
-    groupedCities!: SelectItemGroup[];
-    selectedCountries!: Country[];
+    groupedLayers!: any[];
+    selectedLayer!: any[];
     container: any;
     content: any;
     closer: any;
-
+    ogmSource!:VectorSource;
+    ogmLayer!:VectorLayer<any>;
+    ogmSource2!:VectorSource;
+    ogmLayer2!:VectorLayer<any>;
     constructor() {
     }
 
     ngOnInit(): void {
-        this.groupedCities = mapSideBar;
+
+
+        const layer = '0';
+
+        this.ogmSource = new VectorSource({
+            format:new EsriJSON(),
+            url:function (extent, resolution, projection) {
+                const srid = projection
+                    .getCode()
+                    .split(/:(?=\d+$)/)
+                    .pop();
+
+                return 'https://orbiscbs.ogm.gov.tr/arcgis/rest/services/DISKURUM/BOLME/MapServer/' +
+                    layer +
+                    '/query/?f=json&' +
+                    'returnGeometry=true&spatialRel=esriSpatialRelIntersects&geometry=' +
+                    encodeURIComponent(
+                        '{"xmin":' +
+                        extent[0] +
+                        ',"ymin":' +
+                        extent[1] +
+                        ',"xmax":' +
+                        extent[2] +
+                        ',"ymax":' +
+                        extent[3] +
+                        ',"spatialReference":{"wkid":' +
+                        srid +
+                        '}}'
+                    ) +
+                    '&geometryType=esriGeometryEnvelope&inSR=' +
+                    srid +
+                    '&outFields=*' +
+                    '&outSR=' +
+                    srid;
+            },
+            strategy:tileStrategy(createXYZ(
+                {
+                    tileSize:128
+                }
+            ))
+            ,
+            attributions:'bolme'
+
+        })
+
+        this.ogmLayer = new VectorLayer({
+            source:this.ogmSource,
+            style: {
+                'fill-color': 'rgba(255,255,255,0.45)',
+                'stroke-color': '#e10c0c',
+                'stroke-width': 2,
+            },
+            opacity:0.5,
+            className:'bolme',
+            visible:false
+        })
+
+        this.ogmSource2 = new VectorSource({
+            format:new EsriJSON(),
+            url:function (extent, resolution, projection) {
+                const srid = projection
+                    .getCode()
+                    .split(/:(?=\d+$)/)
+                    .pop();
+
+                return 'https://orbiscbs.ogm.gov.tr/arcgis/rest/services/DISKURUM/SEFLIK/MapServer/' +
+                    layer +
+                    '/query/?f=json&' +
+                    'returnGeometry=true&spatialRel=esriSpatialRelIntersects&geometry=' +
+                    encodeURIComponent(
+                        '{"xmin":' +
+                        extent[0] +
+                        ',"ymin":' +
+                        extent[1] +
+                        ',"xmax":' +
+                        extent[2] +
+                        ',"ymax":' +
+                        extent[3] +
+                        ',"spatialReference":{"wkid":' +
+                        srid +
+                        '}}'
+                    ) +
+                    '&geometryType=esriGeometryEnvelope&inSR=' +
+                    srid +
+                    '&outFields=*' +
+                    '&outSR=' +
+                    srid;
+            },
+            strategy:tileStrategy(createXYZ(
+                {
+                    tileSize:128
+                }
+            ))
+            ,
+            attributions:'seflik'
+
+        })
+
+        this.ogmLayer2 = new VectorLayer({
+            source:this.ogmSource2,
+            style: {
+                'fill-color': 'rgba(0,78,255,0)',
+                'stroke-color': '#5000ff',
+                'stroke-width': 10,
+
+            },
+            opacity:0.5,
+            className:'seflik',
+            visible:false
+        })
+
+        this.map.getMap().addLayer(this.ogmLayer2)
+        this.map.getMap().addLayer(this.ogmLayer)
+
+        this.groupedLayers = mapSideBar;
         this.items = mapTopbar;
 
         //TODO Overlay eklemek için yorum satırını kaldırın
@@ -53,19 +175,15 @@ export class MapComponent implements OnInit, AfterViewInit {
         this.map.select.on('select', function (selected) {
             if(selected.selected.length>0){
                 let attr:any = selected.selected[0]
-                console.log(attr.values_)
-                const polygon = selected.selected[0].getGeometry() as Polygon;
-                console.log(polygon.getCoordinates())
                 const coordinate = selected.mapBrowserEvent.coordinate;
-                const hdms = toLonLat(coordinate, 'EPSG:4326');
-                that.content.innerHTML='<h4>Seçilen Alan</h4>';
+                that.content.innerHTML='<h4>'+'Seçilen Alan'+'</h4>';
+                that.content.innerHTML+='<div style="border:1px solid gray"></div>'
                 for(let i in attr.values_){
-                    if(i!=='geometry'){
-                        console.log(i)
-                        console.log(attr.values_[i])
-                        that.content.innerHTML += '<code style="margin-bottom: 10px"><b>' + i +' : '+' </b> '+ attr.values_[i] + '</code><br>'
+                    if(i!=='geometry' && i!=='CREATED_DATE' && i!=='ALAN' && i!=='UZUNLUK' && i!=='LAST_EDITED_USER' && i!=='LAST_EDITED_DATE' && i!=='ACIKLAMA' && i!=='GLOBAL_ID'){
+                        that.content.innerHTML += '<p><code style="margin-bottom: 10px"><b>' + i +' : '+' </b> '+ attr.values_[i] + '</code><br></p>'
                     }
                 }
+                console.log(that.content.innerHTML)
                 overlay.setPosition(coordinate);
             }else {
                 overlay.setPosition(undefined)
@@ -101,6 +219,19 @@ export class MapComponent implements OnInit, AfterViewInit {
             }
 
         }
+    }
+
+    changeLayer(event:any){
+
+        this.map.getMap().getLayers().forEach(f=>{
+            console.log(f)
+            if(this.selectedLayer.includes(f.getClassName())){
+                f.setVisible(true)
+            }
+            else if(f.getClassName()!=='ol-layer'){
+                f.setVisible(false)
+            }
+        })
     }
 
 }

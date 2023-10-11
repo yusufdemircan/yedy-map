@@ -25,6 +25,7 @@ import {SlideMenuModule} from "primeng/slidemenu";
 import {PanelMenuModule} from "primeng/panelmenu";
 import {ListboxModule} from "primeng/listbox";
 import { TestMapComponent } from './test-map/test-map.component';
+import {TableModule} from "primeng/table";
 
 
 @NgModule({
@@ -56,6 +57,7 @@ import { TestMapComponent } from './test-map/test-map.component';
         SlideMenuModule,
         PanelMenuModule,
         ListboxModule,
+        TableModule,
     ],
     exports:[MapComponent]
 })

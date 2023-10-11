@@ -17,7 +17,14 @@ import {unByKey} from "ol/Observable";
 import {transform} from "ol/proj";
 export class CustomMap {
     public map!: Map;
-    select = new Select();
+    select = new Select({
+        style:new Style({
+            fill:new Fill({
+                color:'rgb(0,111,241)'
+            }),
+
+        })
+    });
 
     translate = new Translate({
         features: this.select.getFeatures(),
