@@ -23,10 +23,12 @@
                                 </p-listbox>
                             </div>
 
-                            <div id="map" class="map"></div>
-                            <div id="popup" class="ol-popup">
-                                <a href="#" id="popup-closer" class="ol-popup-closer"></a>
-                                <div id="popup-content">
+                            <div class="map-panel">
+                                <div [attr.id]="mapDivId" id="map" class="map"></div>
+                                <div id="popup" class="ol-popup">
+                                    <a href="#" id="popup-closer" class="ol-popup-closer"></a>
+                                    <div id="popup-content">
+                                    </div>
                                 </div>
                             </div>
 

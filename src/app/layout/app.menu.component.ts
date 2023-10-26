@@ -29,6 +29,15 @@ export class AppMenuComponent implements OnInit {
 
                 ]
             },
+
+            {
+                label: 'Havacılık',
+                items: [
+                    { label: 'Harita Takip', icon: 'pi pi-map-marker', routerLink: ['/member/havacilik/tracking'] },
+
+                ]
+            },
+
             {
                 label: 'Home',
                 items: [

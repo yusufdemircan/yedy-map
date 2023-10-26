@@ -11,6 +11,7 @@ import {IsAuthed} from "./auth/guards/authguard";
                 path: 'member', component: AppLayoutComponent, //canActivate: [IsAuthed],
                 children: [
                     { path:'map', loadChildren:()=>import('./konumsal/map/map.module').then(m=>m.MapModule)},
+                    { path:'havacilik', loadChildren:()=>import('./konumsal/components/havacilik/havacilik.module').then(m=>m.HavacilikModule)},
                     { path: '', loadChildren: () => import('./fw/components/dashboard/dashboard.module').then(m => m.DashboardModule) },
                     { path: 'uikit', loadChildren: () => import('./fw/components/uikit/uikit.module').then(m => m.UIkitModule) },
                     { path: 'utilities', loadChildren: () => import('./fw/components/utilities/utilities.module').then(m => m.UtilitiesModule) },
@@ -19,6 +20,7 @@ import {IsAuthed} from "./auth/guards/authguard";
                     { path: 'pages', loadChildren: () => import('./fw/components/pages/pages.module').then(m => m.PagesModule) }
                 ]
             },
+
             {
                 path: 'authentication', component: AppLayoutComponent, //canActivate: [IsAuthed],
                 children: [

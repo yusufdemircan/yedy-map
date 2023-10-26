@@ -16,6 +16,7 @@ import CircleStyle from "ol/style/Circle";
 import {unByKey} from "ol/Observable";
 import {transform} from "ol/proj";
 export class CustomMap {
+    mapDivId:string='map';
     public map!: Map;
     select = new Select({
         style:new Style({
@@ -64,6 +65,11 @@ export class CustomMap {
     public continueLineMsg = 'Çizgi çizmek için tıklayınız.'
 
     constructor() {
+        this.generateMap()
+    }
+
+
+    generateMap(){
         const scaleLine = new ScaleLine({bar: true, text: true, minWidth: 125});
         this.source = new VectorSource({wrapX: true});
         this.vector = new VectorLayer({
@@ -77,10 +83,11 @@ export class CustomMap {
             },
         });
         this.modify = new Modify({source: this.source});
+        const that=this;
         this.map = new Map({
             interactions:defaults().extend([this.select]),
             layers: [this.raster, this.vector],
-            target: 'map',
+            target: that.mapDivId,
             view: new View({
                 center: [34.83210051682406, 39.95222973768039],
                 zoom: 6,

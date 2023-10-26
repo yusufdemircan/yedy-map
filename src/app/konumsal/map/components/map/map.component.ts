@@ -26,6 +26,7 @@ interface Country {
 })
 export class MapComponent implements OnInit, AfterViewInit {
     @Input() map!: CustomMap;
+    @Input() mapDivId!:string;
     isVisibleLayers: boolean = false;
     items!: any;
     groupedLayers!: any[];
@@ -41,10 +42,7 @@ export class MapComponent implements OnInit, AfterViewInit {
     }
 
     ngOnInit(): void {
-
-
         const layer = '0';
-
         this.ogmSource = new VectorSource({
             format:new EsriJSON(),
             url:function (extent, resolution, projection) {

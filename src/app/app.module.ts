@@ -13,6 +13,8 @@ import { NodeService } from './fw/service/node.service';
 import { PhotoService } from './fw/service/photo.service';
 import {AuthService} from "./auth/service/authservice";
 import { MenuModule } from 'primeng/menu';
+import {MapModule} from "./konumsal/map/map.module";
+import {HavacilikModule} from "./konumsal/components/havacilik/havacilik.module";
 
 
 @NgModule({
@@ -22,7 +24,7 @@ import { MenuModule } from 'primeng/menu';
     imports: [
         AppRoutingModule,
         AppLayoutModule,
-        MenuModule
+        MenuModule,
     ],
     providers: [
         { provide: LocationStrategy, useClass: HashLocationStrategy },
