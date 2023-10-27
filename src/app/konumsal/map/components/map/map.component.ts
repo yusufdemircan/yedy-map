@@ -1,17 +1,9 @@
-import {AfterViewInit, Component, Input, OnInit} from '@angular/core';
+import {AfterViewInit, Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {CustomMap} from "../../models/CustomMap";
-import {SelectItemGroup} from "primeng/api";
 import {mapSideBar, mapTopbar} from "../../consts/map-edit-tab-menu-item";
-import Map from "ol/Map";
 import {Overlay} from "ol";
-import {toStringHDMS} from "ol/coordinate";
-import {toLonLat} from "ol/proj";
-import {Polygon} from "ol/geom";
-import VectorSource from "ol/source/Vector";
-import EsriJSON from "ol/format/EsriJSON";
-import {tile as tileStrategy} from "ol/loadingstrategy";
-import {createXYZ} from "ol/tilegrid";
 import VectorLayer from "ol/layer/Vector";
+import {MapService} from "../../services/map.service";
 
 
 interface Country {
@@ -24,7 +16,7 @@ interface Country {
     templateUrl: './map.component.html',
     styleUrls: ['./map.component.scss'],
 })
-export class MapComponent implements OnInit, AfterViewInit {
+export class MapComponent implements OnInit, AfterViewInit ,OnDestroy{
     @Input() map!: CustomMap;
     @Input() mapDivId!:string;
     isVisibleLayers: boolean = false;
@@ -34,121 +26,29 @@ export class MapComponent implements OnInit, AfterViewInit {
     container: any;
     content: any;
     closer: any;
-    ogmSource!:VectorSource;
     ogmLayer!:VectorLayer<any>;
-    ogmSource2!:VectorSource;
     ogmLayer2!:VectorLayer<any>;
-    constructor() {
+    evt:any;
+    constructor(private mapService:MapService) {
     }
 
     ngOnInit(): void {
-        const layer = '0';
-        this.ogmSource = new VectorSource({
-            format:new EsriJSON(),
-            url:function (extent, resolution, projection) {
-                const srid = projection
-                    .getCode()
-                    .split(/:(?=\d+$)/)
-                    .pop();
 
-                return 'https://orbiscbs.ogm.gov.tr/arcgis/rest/services/DISKURUM/BOLME/MapServer/' +
-                    layer +
-                    '/query/?f=json&' +
-                    'returnGeometry=true&spatialRel=esriSpatialRelIntersects&geometry=' +
-                    encodeURIComponent(
-                        '{"xmin":' +
-                        extent[0] +
-                        ',"ymin":' +
-                        extent[1] +
-                        ',"xmax":' +
-                        extent[2] +
-                        ',"ymax":' +
-                        extent[3] +
-                        ',"spatialReference":{"wkid":' +
-                        srid +
-                        '}}'
-                    ) +
-                    '&geometryType=esriGeometryEnvelope&inSR=' +
-                    srid +
-                    '&outFields=*' +
-                    '&outSR=' +
-                    srid;
-            },
-            strategy:tileStrategy(createXYZ(
-                {
-                    tileSize:128
-                }
-            ))
-            ,
-            attributions:'bolme'
+        const bolmeStyle = {
+            'fill-color': 'rgba(255,0,0,0.03)',
+            'stroke-color': '#e10c0c',
+            'stroke-width': 2,
+        }
 
-        })
+        const seflikStyle= {
+            'fill-color': 'rgba(0,78,255,0)',
+            'stroke-color': '#5000ff',
+            'stroke-width': 4,
 
-        this.ogmLayer = new VectorLayer({
-            source:this.ogmSource,
-            style: {
-                'fill-color': 'rgba(255,0,0,0.03)',
-                'stroke-color': '#e10c0c',
-                'stroke-width': 2,
-            },
-            opacity:0.5,
-            className:'bolme',
-            visible:false
-        })
+        }
 
-        this.ogmSource2 = new VectorSource({
-            format:new EsriJSON(),
-            url:function (extent, resolution, projection) {
-                const srid = projection
-                    .getCode()
-                    .split(/:(?=\d+$)/)
-                    .pop();
-
-                return 'https://orbiscbs.ogm.gov.tr/arcgis/rest/services/DISKURUM/SEFLIK/MapServer/' +
-                    layer +
-                    '/query/?f=json&' +
-                    'returnGeometry=true&spatialRel=esriSpatialRelIntersects&geometry=' +
-                    encodeURIComponent(
-                        '{"xmin":' +
-                        extent[0] +
-                        ',"ymin":' +
-                        extent[1] +
-                        ',"xmax":' +
-                        extent[2] +
-                        ',"ymax":' +
-                        extent[3] +
-                        ',"spatialReference":{"wkid":' +
-                        srid +
-                        '}}'
-                    ) +
-                    '&geometryType=esriGeometryEnvelope&inSR=' +
-                    srid +
-                    '&outFields=*' +
-                    '&outSR=' +
-                    srid;
-            },
-            strategy:tileStrategy(createXYZ(
-                {
-                    tileSize:128
-                }
-            ))
-            ,
-            attributions:'seflik'
-
-        })
-
-        this.ogmLayer2 = new VectorLayer({
-            source:this.ogmSource2,
-            style: {
-                'fill-color': 'rgba(0,78,255,0)',
-                'stroke-color': '#5000ff',
-                'stroke-width': 4,
-
-            },
-            opacity:0.5,
-            className:'seflik',
-            visible:false
-        })
+        this.ogmLayer=this.mapService.generateVectorLayer('https://orbiscbs.ogm.gov.tr/arcgis/rest/services/DISKURUM/BOLME/MapServer','0','bolme',14,bolmeStyle)
+        this.ogmLayer2=this.mapService.generateVectorLayer('https://orbiscbs.ogm.gov.tr/arcgis/rest/services/DISKURUM/SEFLIK/MapServer','0','seflik',12,seflikStyle)
 
         this.map.getMap().addLayer(this.ogmLayer2)
         this.map.getMap().addLayer(this.ogmLayer)
@@ -181,7 +81,6 @@ export class MapComponent implements OnInit, AfterViewInit {
                         that.content.innerHTML += '<p><code style="margin-bottom: 10px"><b>' + i +' : '+' </b> '+ attr.values_[i] + '</code><br></p>'
                     }
                 }
-                console.log(that.content.innerHTML)
                 overlay.setPosition(coordinate);
             }else {
                 overlay.setPosition(undefined)
@@ -199,14 +98,30 @@ export class MapComponent implements OnInit, AfterViewInit {
     ngAfterViewInit() {
         let button = document.getElementById("side-bar-map");
         let span = document.getElementById("sidebar-span");
-        let map = document.getElementById("map");
-        if (button !== null && map !== null && span !== null)
-            button.onclick = this.openSideBar(button, map, span)
+        let map = document.getElementById(this.mapDivId);
+
+        if (button !== null && map !== null && span !== null){
+            button.setAttribute("id",this.mapDivId+'-btn');
+            span.setAttribute("id",this.mapDivId+'-span');
+            button.onclick = this.openSideBar(map, span)
+        }
+        this.map.getMap().getLayers().forEach(f=>{
+            if(f.getClassName()!=='ol-layer'){
+                f.on('propertychange',evt=>{
+                    let layer = evt.target as VectorLayer<any>;
+                    if(!layer.getVisible()){
+                        //TODO Proplarda bir değişiklik olma durumunda işlem yapılacaksa kullan
+                    }
+
+                })
+            }
+        })
+
+
     }
 
-    openSideBar(button: HTMLElement, map: HTMLElement, span: HTMLElement) {
+    openSideBar(map: HTMLElement, span: HTMLElement) {
         return () => {
-            console.log(this.map.getMap().getViewport())
             this.isVisibleLayers = !this.isVisibleLayers;
             if (!this.isVisibleLayers) {
                 map.className = "map"
@@ -220,15 +135,31 @@ export class MapComponent implements OnInit, AfterViewInit {
     }
 
     changeLayer(event:any){
+        //TODO Harita üzerine çizilen geometryleri kullanmak için
+        /*this.map.getMap().getInteractions().forEach(f=>{
+            if(f instanceof Draw){
+                let draw = f as any;
+                let source = draw.source_ as VectorSource;
+                source.getFeatures().forEach(f=>{
+                    console.log(f.getGeometry())
+                })
+            }
+        })*/
+
+        const req =null;
         this.map.getMap().getLayers().forEach(f=>{
-            console.log(f)
             if(this.selectedLayer.includes(f.getClassName())){
+                let layer = f as VectorLayer<any>;
                 f.setVisible(true)
             }
             else if(f.getClassName()!=='ol-layer'){
                 f.setVisible(false)
             }
         })
+    }
+
+    ngOnDestroy(): void {
+        this.map.getMap().dispose()
     }
 
 }

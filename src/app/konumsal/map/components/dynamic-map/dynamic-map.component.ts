@@ -1,6 +1,7 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {CustomMap} from "../../models/CustomMap";
 import Map from "ol/Map";
+import VectorLayer from "ol/layer/Vector";
 
 @Component({
     selector: 'app-dynamic-map',
@@ -20,6 +21,8 @@ export class DynamicMapComponent implements OnInit ,OnDestroy{
     }
 
     ngOnDestroy(): void {
+        this.map.getMap().dispose()
+
     }
 
 }
