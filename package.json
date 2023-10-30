@@ -23,6 +23,8 @@
     "@angular/router": "^15.1.0",
     "@ngx-translate/core": "^14.0.0",
     "@types/arcgis-rest-api": "^10.4.6",
+    "@types/topojson": "^3.2.5",
+    "@types/topojson-specification": "^1.0.4",
     "@typescript-eslint/eslint-plugin": "^5.37.0",
     "chart.js": "^3.3.2",
     "jspdf": "^2.5.1",

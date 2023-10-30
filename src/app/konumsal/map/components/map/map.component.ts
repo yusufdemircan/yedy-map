@@ -4,6 +4,8 @@ import {mapSideBar, mapTopbar} from "../../consts/map-edit-tab-menu-item";
 import {Overlay} from "ol";
 import VectorLayer from "ol/layer/Vector";
 import {MapService} from "../../services/map.service";
+import {Draw} from "ol/interaction";
+import VectorSource from "ol/source/Vector";
 
 
 interface Country {
@@ -122,6 +124,7 @@ export class MapComponent implements OnInit, AfterViewInit ,OnDestroy{
 
     openSideBar(map: HTMLElement, span: HTMLElement) {
         return () => {
+
             this.isVisibleLayers = !this.isVisibleLayers;
             if (!this.isVisibleLayers) {
                 map.className = "map"
@@ -136,7 +139,7 @@ export class MapComponent implements OnInit, AfterViewInit ,OnDestroy{
 
     changeLayer(event:any){
         //TODO Harita üzerine çizilen geometryleri kullanmak için
-        /*this.map.getMap().getInteractions().forEach(f=>{
+        this.map.getMap().getInteractions().forEach(f=>{
             if(f instanceof Draw){
                 let draw = f as any;
                 let source = draw.source_ as VectorSource;
@@ -144,7 +147,7 @@ export class MapComponent implements OnInit, AfterViewInit ,OnDestroy{
                     console.log(f.getGeometry())
                 })
             }
-        })*/
+        })
 
         const req =null;
         this.map.getMap().getLayers().forEach(f=>{
