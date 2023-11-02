@@ -6,6 +6,7 @@ import VectorLayer from "ol/layer/Vector";
 import {MapService} from "../../services/map.service";
 import {Draw} from "ol/interaction";
 import VectorSource from "ol/source/Vector";
+import {LineString} from "ol/geom";
 
 
 interface Country {
@@ -145,6 +146,8 @@ export class MapComponent implements OnInit, AfterViewInit ,OnDestroy{
                 let source = draw.source_ as VectorSource;
                 source.getFeatures().forEach(f=>{
                     console.log(f.getGeometry())
+                    let line = f.getGeometry() as LineString;
+                    console.log(line.getCoordinates())
                 })
             }
         })

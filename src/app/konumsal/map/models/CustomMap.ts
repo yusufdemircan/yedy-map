@@ -11,7 +11,7 @@ import {Feature, Overlay} from "ol";
 import {LineString, Polygon} from "ol/geom";
 import {getLength} from "ol/sphere";
 import {getArea} from "ol/extent";
-import {Fill, Stroke, Style} from "ol/style";
+import {Fill, Icon, Stroke, Style} from "ol/style";
 import CircleStyle from "ol/style/Circle";
 import {unByKey} from "ol/Observable";
 import {transform} from "ol/proj";
@@ -23,7 +23,18 @@ export class CustomMap {
             fill:new Fill({
                 color:'rgb(0,111,241)'
             }),
-
+            stroke: new Stroke({
+                color: 'rgba(255, 255, 255, 0.7)',
+                width: 2,
+            }),
+            image: new Icon({
+                anchor: [0.5, 20],
+                anchorXUnits: 'fraction',
+                anchorYUnits: 'pixels',
+                rotateWithView: true,
+                rotation: 0,
+                src: 'https://cdn-icons-png.flaticon.com/32/876/876173.png',
+            }),
         })
     });
 
@@ -67,8 +78,6 @@ export class CustomMap {
     constructor() {
         this.generateMap()
     }
-
-
     generateMap(){
         const scaleLine = new ScaleLine({bar: true, text: true, minWidth: 125});
         this.source = new VectorSource({wrapX: true});
@@ -77,8 +86,8 @@ export class CustomMap {
             style: {
                 'fill-color': 'rgba(255, 255, 255, 0.2)',
                 'stroke-color': '#002ebb',
-                'stroke-width': 2,
-                'circle-radius': 7,
+                'stroke-width': 1,
+                'circle-radius': 5,
                 'circle-fill-color': '#5929c7',
             },
         });

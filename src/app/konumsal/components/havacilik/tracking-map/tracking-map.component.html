@@ -1,8 +1,39 @@
 <konumsal-map [map]="map" [mapDivId]="'havacilik-takip'"></konumsal-map>
-<label for="speed">
-    speed:&nbsp;
-    <input id="speed" [(ngModel)]="speedInput" type="range" min="10" max="999" step="10" value="60">
-</label>
-<button id="start-animation" (click)="startAnimation()" >Simüle et</button>
-<button id="stop-animation" (click)="stopAnimation()" >Durdur</button>
 
+<div class="grid p-fluid">
+    <div class="col-12">
+        <div class="card">
+            <div class="col-12">
+                <div class="card">
+                    <h5>Takip</h5>
+                    <div class="p-fluid p-formgrid grid">
+
+                        <div class="field col-12 md:col-6">
+                            <p-slider [(ngModel)]="speedInput" [min]="10" [max]="10000" [step]="10"></p-slider>
+                        </div>
+                        <div class="field col-12 md:col-6">
+
+                            <form class="flex align-items-center gap-1" [formGroup]="formGroup!">
+
+                                <p-checkbox formControlName="city" value="heartbeat" (onChange)="heartBeat=!heartBeat"
+                                            id="ny"></p-checkbox>
+                                <label for="ny">Yakın Takip</label>
+                            </form>
+                        </div>
+
+                        <div class="field col-12 md:col-6">
+                            <button pButton pRipple label="Başlat" (click)="startAnimation()"
+                            ></button>
+                        </div>
+                        <div class="field col-12 md:col-6">
+                            <button pButton pRipple label="Durdur" (click)="stopAnimation()"
+                                    class="p-button-danger"></button>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

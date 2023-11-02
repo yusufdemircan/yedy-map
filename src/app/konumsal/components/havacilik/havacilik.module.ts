@@ -3,7 +3,12 @@ import {CommonModule} from '@angular/common';
 import {TrackingMapComponent} from './tracking-map/tracking-map.component';
 import {HavacilikRoutingModule} from "./havacilik-routing.module";
 import {MapModule} from "../../map/map.module";
-import {FormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {CheckboxModule} from "primeng/checkbox";
+import {RippleModule} from "primeng/ripple";
+import {ButtonModule} from "primeng/button";
+import {SliderModule} from "primeng/slider";
+import {HavacilikService} from "./services/havacilik.service";
 
 @NgModule({
     declarations: [
@@ -13,8 +18,14 @@ import {FormsModule} from "@angular/forms";
         CommonModule,
         FormsModule,
         HavacilikRoutingModule,
-        MapModule
-    ]
+        MapModule,
+        CheckboxModule,
+        ReactiveFormsModule,
+        RippleModule,
+        ButtonModule,
+        SliderModule
+    ],
+    providers:[HavacilikService]
 })
 export class HavacilikModule {
 }

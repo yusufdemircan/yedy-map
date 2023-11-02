@@ -35,7 +35,9 @@
                             "node_modules/ol/ol.css"
                         ],
                         "scripts": [
+
                         ]
+
                     },
                     "configurations": {
                         "production": {
@@ -72,12 +74,17 @@
                 },
                 "serve": {
                     "builder": "@angular-devkit/build-angular:dev-server",
+                    "options": {
+                        "proxyConfig": "src/proxy.conf.json"
+                    },
                     "configurations": {
                         "production": {
                             "browserTarget": "fw-frontend:build:production"
                         },
                         "development": {
-                            "browserTarget": "fw-frontend:build:development"
+                            "browserTarget": "fw-frontend:build:development",
+                            "proxyConfig": "src/proxy.conf.json"
+
                         }
                     },
                     "defaultConfiguration": "development"
