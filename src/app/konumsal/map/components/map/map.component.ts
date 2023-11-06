@@ -145,9 +145,7 @@ export class MapComponent implements OnInit, AfterViewInit ,OnDestroy{
                 let draw = f as any;
                 let source = draw.source_ as VectorSource;
                 source.getFeatures().forEach(f=>{
-                    console.log(f.getGeometry())
                     let line = f.getGeometry() as LineString;
-                    console.log(line.getCoordinates())
                 })
             }
         })

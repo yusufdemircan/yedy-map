@@ -4,11 +4,11 @@ import {LineString, Point} from "ol/geom";
 import VectorLayer from "ol/layer/Vector";
 import {Feature} from "ol";
 import {getVectorContext} from "ol/render";
-import {Icon, Style} from "ol/style";
+import {Icon, Stroke, Style} from "ol/style";
 import {unByKey} from "ol/Observable";
-import {delay} from "rxjs";
 import {FormControl, FormGroup} from "@angular/forms";
 import {HavacilikService} from "../services/havacilik.service";
+import VectorSource from "ol/source/Vector";
 
 @Component({
     selector: 'app-tracking-map',
@@ -21,7 +21,10 @@ export class TrackingMapComponent implements OnInit {
     speedInput: number = 10;
     animating: boolean = false;
     lastTime: any;
-    vectorLayer!: VectorLayer<any>;
+    havaAraciLayer!: VectorLayer<any>;
+    havaAraciSource!:VectorSource;
+    havaAraciLayerHistory!: VectorLayer<any>;
+    havaAraciSourceHistory!:VectorSource;
     position: any;
     geoMarker: any;
     distance: number = 0;
@@ -37,17 +40,17 @@ export class TrackingMapComponent implements OnInit {
     featuresList: any[] = [];
     feature: any;
     waterCollectionStyle:any;
+    suCukuruLayer!:VectorLayer<any>;
+    suCukuruSource!:VectorSource;
     constructor(private havacilikService:HavacilikService) {
 
     }
 
     ngOnInit(): void {
-
         this.initSettings();
         this.addRoute()
         this.havacilikService.getWaterCollectionPit().subscribe(resp=>{
             resp.data.forEach((f:any)=>{
-                console.log(f)
                 let points = f.nokta.replaceAll(",",".").split(":");
                 this.addWaterCollectionPits([parseFloat(points[0]),parseFloat(points[1])],f)
             })
@@ -55,20 +58,56 @@ export class TrackingMapComponent implements OnInit {
     }
 
     initSettings() {
-
         this.formGroup = new FormGroup({
             city: new FormControl<string | null>(null)
         });
-
         this.map = new CustomMap();
+        this.havaAraciSource = new VectorSource({
+            features:[]
+        })
+        this.havaAraciLayer = new VectorLayer<any>({
+            source:this.havaAraciSource
+        });
+
+        this.havaAraciSourceHistory= new VectorSource({
+            features:[]
+        })
+        this.havaAraciLayerHistory = new VectorLayer<any>({
+            source:this.havaAraciSourceHistory,
+            className:'havaAraclariHistory',
+            visible:false
+        });
+
+
+        this.suCukuruSource = new VectorSource({
+            features:[],
+        })
+        this.suCukuruLayer=new VectorLayer<any>({
+            source:this.suCukuruSource,
+            className:'suCukuruLayer',
+            visible:false,
+
+        })
+
+        this.map.getMap().addLayer(this.suCukuruLayer);
+        this.map.getMap().addLayer(this.havaAraciLayerHistory);
         let that=this;
         this.map.select.on('select', function (selected:any) {
             if (selected.selected.length > 0) {
-                that.addRouteHistory(that.route)
+                if(selected.deselected.length>0) {
+                    that.clearHistory()
+                }
+                that.map.getMap().getLayers().forEach(f => {
+                    if (f instanceof VectorLayer && f.getClassName() == 'havaAraclari') {
+                        if(f.getVisible()){
+                            that.addRouteHistory(that.route)
+                        }
+                    }
+                })
             }
             else{
-                console.log(that.feature)
-                //that.removeFeatures([that.feature,that.startMarker,that.geoMarker])
+                that.listenerKey.forEach(f => unByKey(f))
+                that.clearHistory()
             }
         });
         this.planeSymbol = new Style({
@@ -78,18 +117,18 @@ export class TrackingMapComponent implements OnInit {
                 anchorYUnits: 'pixels',
                 rotateWithView: true,
                 rotation: 0,
-                src: 'https://cdn-icons-png.flaticon.com/64/1048/1048346.png',
+                src: '/assets/images/heli-64.png',//https://cdn-icons-png.flaticon.com/64/1048/1048346.png
             }),
         });
         this.trackASymbol = new Style({
             image: new Icon({
-                anchor: [0.5, 15],
+                anchor: [0.5, 40],
                 anchorXUnits: 'fraction',
                 anchorYUnits: 'pixels',
                 rotateWithView: true,
                 rotation: 0,
                 scale: 0.5,
-                src: 'https://cdn-icons-png.flaticon.com/32/1783/1783356.png',
+                src: '/assets/images/prop-64.png',//https://cdn-icons-png.flaticon.com/32/1783/1783356.png  /assets/images/propeller-64.png
             }),
         });
         this.startSymbol = new Style({
@@ -99,7 +138,7 @@ export class TrackingMapComponent implements OnInit {
                 anchorYUnits: 'pixels',
                 rotateWithView: true,
                 rotation: 0,
-                src: 'https://cdn-icons-png.flaticon.com/32/2850/2850722.png',
+                src: '/assets/images/heliport-32.png',//https://cdn-icons-png.flaticon.com/32/2850/2850722.png
             }),
         });
 
@@ -110,21 +149,27 @@ export class TrackingMapComponent implements OnInit {
                 anchorYUnits: 'pixels',
                 rotateWithView: true,
                 rotation: 0,
-                src: 'https://cdn-icons-png.flaticon.com/32/11015/11015750.png',
+                src: '/assets/images/lake-32.png',//https://cdn-icons-png.flaticon.com/32/11015/11015750.png
             }),
         });
+    }
+
+    clearHistory(){
+        this.map.getMap().getLayers().forEach(f => {
+            if (f instanceof VectorLayer && f.getClassName() == 'havaAraclariHistory') {
+                f.getSource().clear()
+            }
+        })
     }
 
     addWaterCollectionPits(points:number[],attr:any){
         let waterCollection =  new Feature({
             geometry: new Point(points),
         })
-        if(attr.adi!==null)
-            console.log(attr)
         waterCollection.setProperties({"Adı":attr.adi})
         waterCollection.setProperties({"Tür":attr.turu})
         waterCollection.setStyle(this.waterCollectionStyle);
-        this.addFeatures([waterCollection])
+        this.suCukuruSource.addFeatures([waterCollection])
     }
 
     addRoute() {
@@ -1264,18 +1309,26 @@ export class TrackingMapComponent implements OnInit {
         this.lastMarker.setProperties({"il": ["Çanakkale"]})
         this.lastMarker.setProperties({"Tip": "Helikopter"})
         this.lastMarker.setStyle(this.planeSymbol)
-        this.addFeatures([this.lastMarker]);
+
+        let vector = new VectorLayer({
+            source:new VectorSource({
+                features:[this.lastMarker]
+            }),
+            visible:false,
+            className:'havaAraclari'
+        })
+        this.map.getMap().addLayer(vector)
+        //this.addFeatures([this.lastMarker]);
         //this.addRouteHistory(this.route)
     }
 
     addRouteHistory(route: any) {
-
         this.feature = new Feature({
-            geometry: this.route,
+            geometry: route,
         })
 
         this.startMarker = new Feature({
-            geometry: new Point(this.route.getFirstCoordinate()),
+            geometry: new Point(route.getFirstCoordinate()),
         })
 
         this.startMarker.setStyle(this.startSymbol)
@@ -1286,15 +1339,10 @@ export class TrackingMapComponent implements OnInit {
             geometry: this.position,
         });
         this.geoMarker.setStyle(this.trackASymbol)
-        this.addFeatures([this.startMarker, this.geoMarker, this.feature])
-    }
-
-
-    addFeatures(featureList: any[]) {
         this.map.getMap().getLayers().forEach(f => {
-            if (f instanceof VectorLayer && f.getClassName() == 'ol-layer') {
-                this.vectorLayer = f;
-                this.vectorLayer.getSource().addFeatures(featureList);
+            if (f instanceof VectorLayer && f.getClassName() == 'havaAraclariHistory') {
+                f.setVisible(true)
+                f.getSource().addFeatures([this.startMarker,this.geoMarker,this.feature]);
             }
         })
     }
@@ -1302,8 +1350,8 @@ export class TrackingMapComponent implements OnInit {
     removeFeatures(featureList: any[]){
         this.map.getMap().getLayers().forEach(f => {
             if (f instanceof VectorLayer && f.getClassName() == 'ol-layer') {
-                this.vectorLayer = f;
-                this.vectorLayer.getSource().removeFeatures(featureList);
+                this.havaAraciLayer = f;
+                this.havaAraciLayer.getSource().removeFeatures(featureList);
             }
         })
     }
@@ -1324,8 +1372,10 @@ export class TrackingMapComponent implements OnInit {
             that.map.getMap().getView().setZoom(that.map.getMap().getView().getMaxZoom() - 4)
         }
         let vectorContext = getVectorContext(event);
-        let styleVector = that.trackASymbol;
-        vectorContext.setStyle(styleVector);
+        let style = that.trackASymbol;
+        style.getImage().setRotation(style.getImage().getRotation()+0.3)
+        //let styleVector = that.trackASymbol;
+        vectorContext.setStyle(style);
         vectorContext.drawGeometry(that.position)
 
         that.map.getMap().render()
@@ -1335,7 +1385,7 @@ export class TrackingMapComponent implements OnInit {
         this.animating = true;
         this.lastTime = Date.now()
         const that = this;
-        this.listenerKey.push(this.vectorLayer.on('postrender', function (evt) {
+        this.listenerKey.push(this.havaAraciLayerHistory.on('postrender', function (evt) {
             return that.moveFeature(evt, that)
         }))
         this.geoMarker.setGeometry(undefined);

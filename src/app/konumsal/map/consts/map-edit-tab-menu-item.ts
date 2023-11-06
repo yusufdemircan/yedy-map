@@ -64,9 +64,16 @@ export const mapSideBar = [
         items: [
             {label: 'Bölme', value: 'bolme'},
             {label: 'Şeflik', value: 'seflik'},
-
-        ]
+        ],
     },
+    {
+        label:'Yangın',value:'layer',
+        items: [
+            {label: 'Su Toplama Çukuru', value: 'suCukuruLayer'},
+            {label: 'Hava Araçları', value: 'havaAraclari'},
+
+        ],
+    }
 
 ];
 
