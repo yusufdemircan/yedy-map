@@ -22,10 +22,8 @@ $gutter: 1rem; //for primeflex grid system
     text-align: center;
     border-radius: 15px;
     padding: 5px;
-    width: 35%;
-    font-weight:normal;
-    font-size: 12px;
-    right: 35% !important;
+    left:10rem !important;
+    right: 10rem !important;
     position: absolute;
 }
 
@@ -59,7 +57,7 @@ $gutter: 1rem; //for primeflex grid system
 .ol-zoomslider button {
     position: relative;
     width: 1.8em !important;
-    height: 10px;
+    height: 10rem;
 }
 
 .ol-control button {

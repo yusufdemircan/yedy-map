@@ -23,7 +23,7 @@ interface Country {
 export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
     @Input() map!: CustomMap;
     @Input() mapDivId!: string;
-    inputDisabled :boolean=false;
+    inputDisabled: boolean = false;
     isVisibleLayers: boolean = false;
     drawOptionBar: boolean = false;
     measureOptionBar: boolean = false;
@@ -41,25 +41,28 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
     drawValue: any;
     measureValue: any;
     printValue: any;
-    dockValue:any;
-    airVehicleInfoTemplateVisible:boolean=false;
-    airVehicleInfoTemplate:any;
-    mapOverlay:any;
+    dockValue: any;
+    airVehicleInfoTemplateVisible: boolean = false;
+    airVehicleInfoTemplate: any;
+    mapOverlay: any;
+    mapOverlayHeader: any;
+    mapOverlayInfo: any;
+
     drawOptions: any[] = [
-        {icon: 'pi pi-circle-on', justify: 'Left', label: 'Nokta',value:'Point'},
-        {icon: 'pi pi-minus', justify: 'Right', label: 'Çizgi',value:'LineString'},
-        {icon: 'pi pi-cloud', justify: 'Center', label: 'Polygon',value:'Polygon'},
-        {icon: 'pi pi-circle-off', justify: 'Justify', label: 'Daire',value:'Circle'},
-        {icon: 'pi pi-globe', justify: 'Right', label: 'Gezinti',value:'None'}
+        {icon: 'pi pi-circle-on', justify: 'Left', label: 'Nokta', value: 'Point'},
+        {icon: 'pi pi-minus', justify: 'Right', label: 'Çizgi', value: 'LineString'},
+        {icon: 'pi pi-cloud', justify: 'Center', label: 'Polygon', value: 'Polygon'},
+        {icon: 'pi pi-circle-off', justify: 'Justify', label: 'Daire', value: 'Circle'},
+        {icon: 'pi pi-globe', justify: 'Right', label: 'Gezinti', value: 'None'}
     ];
     measureOptions: any[] = [
-        {icon: 'pi pi-minus', justify: 'Right', label: 'Çizgi',value:'line'},
-        {icon: 'pi pi-circle-off', justify: 'Justify', label: 'Alan',value:'area'},
+        {icon: 'pi pi-minus', justify: 'Right', label: 'Çizgi', value: 'line'},
+        {icon: 'pi pi-circle-off', justify: 'Justify', label: 'Alan', value: 'area'},
     ];
     printOptions: any[] = [
-        {icon: 'pi pi-file-pdf', justify: 'Right', label: 'PDF',value:'PDF'},
-        {icon: 'pi pi-image', justify: 'Justify', label: 'PNG',value:'PNG'},
-        {icon: 'pi pi-file-o', justify: 'Justify', label: 'KML',value:'KML'},
+        {icon: 'pi pi-file-pdf', justify: 'Right', label: 'PDF', value: 'PDF'},
+        {icon: 'pi pi-image', justify: 'Justify', label: 'PNG', value: 'PNG'},
+        {icon: 'pi pi-file-o', justify: 'Justify', label: 'KML', value: 'KML'},
     ];
 
     constructor(private mapService: MapService) {
@@ -110,7 +113,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
                 icon: '/assets/images/multiply.png',
                 command: () => {
                     this.changeOption()
-                    this.mapOverlay.style.display='none'
+                    this.mapOverlay.style.display = 'none'
                     this.map.select.setActive(true)
                 }
             }
@@ -152,24 +155,44 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
         });
         this.airVehicleInfoTemplate = document.getElementById('content-param')
         this.mapOverlay = document.getElementById("map-overlay")
-        this.mapOverlay.style.display='none';
+        this.mapOverlayHeader = document.getElementById("overlay-header")
+        this.mapOverlayInfo = document.getElementById("overlay-info")
+
+        this.mapOverlay.style.display = 'none';
         this.map.getMap().addOverlay(overlay);
         const that = this;
         this.map.select.on('select', function (selected) {
             if (selected.selected.length > 0) {
-                that.airVehicleInfoTemplate.innerHTML=''
+                that.airVehicleInfoTemplate.innerHTML = ''
                 let attr: any = selected.selected[0]
-                if(attr.values_['features'] !==undefined)
+                if (attr.values_['features'] !== undefined)
                     attr = attr.values_['features'][0]
-                that.airVehicleInfoTemplateVisible=true;
-                that.mapOverlay.style.display='block';
+                that.airVehicleInfoTemplateVisible = true;
+                that.mapOverlay.style.display = 'block';
+                if (selected.target.getLayer(selected.selected[0]).getClassName() != 'airVehicles') {
+                    that.mapOverlayHeader.innerHTML = '<div class="col-12"><div class="flex flex-column text-center">\n' +
+                        '                                                        <div class="text-4xl font-bold">Su Toplama Çukuru</div>\n' +
+                        '                                                    </div></div>';
+                    that.mapOverlayInfo.innerHTML = '<div class="">' + attr.values_['turu'] + '</div>'
+
+                } else {
+                    that.mapOverlayHeader.innerHTML = '' +
+                        '<div _ngcontent-wib-c23="">' +
+                        '<div class="text-4xl font-bold">İST</div><' +
+                        '/div>' +
+                        '<p-image _ngcontent-wib-c23="" src="/assets/images/plane-orange.png" alt="Image" height="64" width="64" class="p-element ng-tns-c22-63 ng-star-inserted" ng-reflect-src="/assets/images/plane-orange.pn" ng-reflect-alt="Image" ng-reflect-height="64" ng-reflect-width="64">' +
+                        '<span class="ng-tns-c22-63 p-image p-component" ng-reflect-ng-class="[object Object]">' +
+                        '<img class="ng-tns-c22-63" src="/assets/images/plane-orange.png" alt="Image" width="64" height="64"></span>' +
+                        '</p-image><div _ngcontent-wib-c23=""><div class="text-4xl font-bold">ANK</div></div>';
+                    that.mapOverlayInfo.innerHTML = '';
+                }
 
                 for (let i in attr.values_) {
-                    if(i.includes('id')||i.includes('geometry'))
+                    if (i.includes('id') || i.includes('geometry'))
                         continue
-                    that.airVehicleInfoTemplate.innerHTML+='<div class="col-12"><div class="flex flex-column">\n' +
-                        '                                                        <div class="text-2xl font-bold">'+i+'</div>\n' +
-                        '                                                        <div class="">'+attr.values_[i]+'</div>\n' +
+                    that.airVehicleInfoTemplate.innerHTML += '<div class="col-12"><div class="flex flex-column">\n' +
+                        '                                                        <div class="text-2xl font-bold">' + i + '</div>\n' +
+                        '                                                        <div class="">' + attr.values_[i] + '</div>\n' +
                         '                                                    </div></div>'
                 }
 
@@ -183,8 +206,8 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
                 }
                 overlay.setPosition(coordinate);*/
             } else {
-                that.mapOverlay.style.display='none';
-                that.airVehicleInfoTemplateVisible=false;
+                that.mapOverlay.style.display = 'none';
+                that.airVehicleInfoTemplateVisible = false;
                 overlay.setPosition(undefined)
             }
 
@@ -265,12 +288,12 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
         this.map.getMap().dispose()
     }
 
-    changeOption(){
+    changeOption() {
         this.defaultOpt()
-        this.drawOptionBar=false
-        this.measureOptionBar=false;
-        this.printOptionBar=false;
-        this.isVisibleLayers=false;
+        this.drawOptionBar = false
+        this.measureOptionBar = false;
+        this.printOptionBar = false;
+        this.isVisibleLayers = false;
     }
 
     addInteraction() {
@@ -281,15 +304,15 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
         this.map.addMeasurementInteraction(this.measureValue, this.map.getMap());
     }
 
-    defaultOpt(){
+    defaultOpt() {
         this.map.select.setActive(false)
-        this.drawValue='None'
+        this.drawValue = 'None'
         this.map.addInteractionDraw('None');
-        this.measureValue='None';
-        this.printValue='None'
+        this.measureValue = 'None';
+        this.printValue = 'None'
     }
 
-    exportMap(){
+    exportMap() {
         this.map.printMap(this.map.getMap(), this.printValue.value)
     }
 

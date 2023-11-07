@@ -74,12 +74,12 @@
                                 <div [attr.id]="mapDivId + '-map-overlay'" id="map-overlay" class="map-overlay">
                                     <div class="overlay-header">
                                         <div class="overlay-close">
-                                            <button pButton pRipple type="button" icon="pi pi-times"
+                                            <button pButton pRipple type="button" icon="pi pi-times" (click)="mapOverlay.style.display='none'"
                                                     class="p-button-rounded p-button-danger p-button-text"></button>
 
                                         </div>
                                         <div class="overlay-in-content">
-                                            <div class="flight-info">
+                                            <div class="flight-info" id="overlay-header" [attr.id]="mapDivId+ '-map-overlay-header'">
                                                 <div><p class="bold-tag">İST</p></div>
                                                 <p-image src="/assets/images/plane-orange.png" alt="Image" height="64"
                                                          width="64"></p-image>
@@ -87,7 +87,7 @@
                                             </div>
 
 
-                                            <div class="flight-time">
+                                            <div class="flight-time" [attr.id]="mapDivId+ '-map-overlay-info'" id="overlay-info">
                                                 <p-image src="/assets/images/clock.png" alt="Image" height="16"
                                                          width="16"></p-image>
                                                 <div style="margin-left: 5px"><p style="font-size: 16px">1 saat 37
@@ -99,19 +99,7 @@
                                     <div class="overlay-content">
                                         <div class="overlay-in-content">
                                             <div class="card" style="height:100%">
-                                                <div id="content-param" class="p-fluid p-formgrid grid">
-                                                    <!--<div class="flex flex-column mb-3">
-                                                        <div class="text-2xl font-bold">Bamboo Watch</div>
-                                                        <div class="mb-3">Product Description</div>
-                                                    </div>-->
-                                                    <!--<div class="field col-12 md:col-6">
-                                                        <label htmlFor="lastname2">Kapasite</label>
-                                                        <input disabled pInputText id="lastname2" type="text" />
-                                                    </div>
-                                                    <div class="field col-12">
-                                                        <label htmlFor="address">Konum</label>
-                                                        <input [value]="'Ankara Yenimahalle'" disabled pInputTextarea id="address" rows="4" />
-                                                    </div>-->
+                                                <div [attr.id]="mapDivId+'-content-param'" id="content-param" class="p-fluid p-formgrid grid">
                                                 </div>
                                             </div>
                                         </div>
