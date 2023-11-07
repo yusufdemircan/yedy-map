@@ -6,26 +6,119 @@
                 <div class="p-fluid p-formgrid grid">
                     <div class="field col-12">
                         <div id="fullscreen" class="fullscreen">
-                            <div class="topbar-map">
-                                <konumsal-map-status-bar [map]="map"></konumsal-map-status-bar>
-                            </div>
-                            <div *ngIf="isVisibleLayers" class="sidepanel">
+                            <!-- <div class="topbar-map">
+                                 <konumsal-map-status-bar [map]="map"></konumsal-map-status-bar>
+                             </div>
+ -->
+                            <div [attr.id]="mapDivId" id="map" class="map">
+                                <div *ngIf="isVisibleLayers" class="sidepanel">
+                                    <p-listbox [options]="groupedLayers" [group]="true" [(ngModel)]="selectedLayer"
+                                               [metaKeySelection]="false" [checkbox]="true" [filter]="true"
+                                               (onChange)="changeLayer($event)"
+                                               [multiple]="true"
+                                               [style]="{'width':'100%','height':'100%','overflow':'auto'}">
+                                        <ng-template let-group pTemplate="group">
+                                            <div class="align-items-center">
+                                                <span>{{group.label}}</span>
+                                            </div>
+                                        </ng-template>
+                                    </p-listbox>
+                                </div>
+                                <div class="dock-window">
+                                    <p-dock [model]="mapBottomItem!" [position]="'bottom'">
+                                        <ng-template pTemplate="item" let-item>
+                                            <img [src]="item.icon" [alt]="item.label" width="100%"/>
+                                        </ng-template>
+                                    </p-dock>
+                                </div>
 
-                                <p-listbox [options]="groupedLayers" [group]="true" [(ngModel)]="selectedLayer"
-                                           [metaKeySelection]="false" [checkbox]="true" [filter]="true"
-                                           (onChange)="changeLayer($event)"
-                                           [multiple]="true"
-                                           [style]="{'width':'100%','height':'100%','overflow':'auto'}">
-                                    <ng-template let-group pTemplate="group">
-                                        <div class="align-items-center">
-                                            <span>{{group.label}}</span>
+                                <div class="draw-option" *ngIf="drawOptionBar">
+                                    <p-selectButton (onChange)="addInteraction()" [options]="drawOptions"
+                                                    [(ngModel)]="drawValue" optionLabel="label">
+                                        <ng-template let-item pTemplate>
+                                            <div
+                                                style="display:flex;flex-direction: row;justify-content: center;align-items: center;text-align: center">
+                                                <i [class]="item.icon"></i>
+                                                <p style="margin-left: 10px">{{item.label}}</p>
+                                            </div>
+                                        </ng-template>
+                                    </p-selectButton>
+                                </div>
+
+                                <div class="draw-option" *ngIf="measureOptionBar">
+                                    <p-selectButton (onChange)="addMeasurement()" [options]="measureOptions"
+                                                    [(ngModel)]="measureValue" optionLabel="label">
+                                        <ng-template let-item pTemplate>
+                                            <div
+                                                style="display:flex;flex-direction: row;justify-content: center;align-items: center;text-align: center">
+                                                <i [class]="item.icon"></i>
+                                                <p style="margin-left: 10px">{{item.label}}</p>
+                                            </div>
+                                        </ng-template>
+                                    </p-selectButton>
+                                </div>
+
+                                <div class="draw-option" *ngIf="printOptionBar">
+                                    <p-selectButton (onChange)="exportMap()" [options]="printOptions"
+                                                    [(ngModel)]="printValue" optionLabel="label">
+                                        <ng-template let-item pTemplate>
+                                            <div
+                                                style="display:flex;flex-direction: row;justify-content: center;align-items: center;text-align: center">
+                                                <i [class]="item.icon"></i>
+                                                <p style="margin-left: 10px">{{item.label}}</p>
+                                            </div>
+                                        </ng-template>
+                                    </p-selectButton>
+                                </div>
+
+                                <div [attr.id]="mapDivId + '-map-overlay'" id="map-overlay" class="map-overlay">
+                                    <div class="overlay-header">
+                                        <div class="overlay-close">
+                                            <button pButton pRipple type="button" icon="pi pi-times"
+                                                    class="p-button-rounded p-button-danger p-button-text"></button>
+
                                         </div>
-                                    </ng-template>
-                                </p-listbox>
+                                        <div class="overlay-in-content">
+                                            <div class="flight-info">
+                                                <div><p class="bold-tag">İST</p></div>
+                                                <p-image src="/assets/images/plane-orange.png" alt="Image" height="64"
+                                                         width="64"></p-image>
+                                                <div><p class="bold-tag">ANK</p></div>
+                                            </div>
+
+
+                                            <div class="flight-time">
+                                                <p-image src="/assets/images/clock.png" alt="Image" height="16"
+                                                         width="16"></p-image>
+                                                <div style="margin-left: 5px"><p style="font-size: 16px">1 saat 37
+                                                    dk</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="overlay-content">
+                                        <div class="overlay-in-content">
+                                            <div class="card" style="height:100%">
+                                                <div id="content-param" class="p-fluid p-formgrid grid">
+                                                    <!--<div class="flex flex-column mb-3">
+                                                        <div class="text-2xl font-bold">Bamboo Watch</div>
+                                                        <div class="mb-3">Product Description</div>
+                                                    </div>-->
+                                                    <!--<div class="field col-12 md:col-6">
+                                                        <label htmlFor="lastname2">Kapasite</label>
+                                                        <input disabled pInputText id="lastname2" type="text" />
+                                                    </div>
+                                                    <div class="field col-12">
+                                                        <label htmlFor="address">Konum</label>
+                                                        <input [value]="'Ankara Yenimahalle'" disabled pInputTextarea id="address" rows="4" />
+                                                    </div>-->
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
                             </div>
-
-
-                            <div [attr.id]="mapDivId" id="map" class="map"></div>
                             <div id="popup" class="ol-popup">
                                 <a href="#" id="popup-closer" class="ol-popup-closer"></a>
                                 <div id="popup-content">

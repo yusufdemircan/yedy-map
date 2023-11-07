@@ -70,7 +70,7 @@ export const mapSideBar = [
         label:'Yangın',value:'layer',
         items: [
             {label: 'Su Toplama Çukuru', value: 'suCukuruLayer'},
-            {label: 'Hava Araçları', value: 'havaAraclari'},
+            {label: 'Hava Araçları', value: 'airVehicles'},
 
         ],
     }

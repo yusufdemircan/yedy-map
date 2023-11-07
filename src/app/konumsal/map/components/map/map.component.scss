@@ -1,5 +1,5 @@
 
-.map-panel{
+.map-panel {
     width: 100%;
     height: 100%;
     float: right;
@@ -9,15 +9,23 @@
     width: 100%;
     height: 100%;
     float: right;
+    position: relative;
+    display: flex;
+}
+
+.bottom-menu {
+    position: absolute;
+    z-index: 2;
+    bottom: 5%;
+    margin: auto;
 }
 
 .fullscreen:-webkit-full-screen {
     height: 100%;
     margin: 0;
-    overflow:auto;
+    overflow: auto;
 
 }
-
 
 .fullscreen {
     margin-bottom: 10px;
@@ -27,16 +35,14 @@
 
 .fullscreen:fullscreen {
     height: 100%;
-    overflow:auto;
+    overflow: auto;
 }
 
-.map.side {
-    width:80%;
-    height: 100%;
-    float: right;
-}
 
 .sidepanel {
+    position: absolute;
+    z-index: 99;
+    opacity: 0.8;
     width: 20%;
     height: 100%;
     float: left;
@@ -51,7 +57,81 @@
 }
 
 .grid p-fluid {
-    border:2px solid black !important;
+    border: 2px solid black !important;
 }
+
+.draw-option {
+    position: absolute;
+    z-index: 99;
+    opacity: 0.8;
+    margin: auto;
+    top: 10%;
+    left: 10%;
+    right: 10%;
+}
+
+.map-overlay {
+    position: absolute;
+    width:25%;
+    height: 80%;
+    background-color: #ffffff;
+    z-index: 99;
+    opacity: 0.85;
+    margin: auto;
+    top: 20%;
+    bottom: 20%;
+    right: 5%;
+}
+
+.overlay-header{
+    background-color: #eeeeee;
+    height:30%;
+    width:100%;
+}
+.overlay-content{
+    height:70%;
+    width:100%;
+
+}
+
+.overlay-close{
+    position:absolute;
+    right:5px;
+    top:5px;
+    display:none;
+}
+.overlay-in-content{
+    height:100%;
+    width:100%;
+    overflow:auto;
+}
+
+.flight-info{
+    background-color: rgba(84, 84, 84, 0.67);
+    display:flex;
+    flex-direction:row;
+    justify-content:center;
+    align-items:center;
+    height:80%;
+    width:100%;
+    color:white;
+}
+.flight-time{
+    background-color: #ffc900;
+    display:flex;
+    flex-direction:row;
+    align-items:center;
+    justify-content:center;
+    height:20%;
+    width:100%;
+}
+.bold-tag{
+    padding:12px;
+    font-size:24px;
+    font-weight: bold;
+}
+
+
+
 
 

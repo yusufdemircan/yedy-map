@@ -4,11 +4,15 @@ import {LineString, Point} from "ol/geom";
 import VectorLayer from "ol/layer/Vector";
 import {Feature} from "ol";
 import {getVectorContext} from "ol/render";
-import {Icon, Stroke, Style} from "ol/style";
+import {Fill, Icon, Stroke, Style} from "ol/style";
 import {unByKey} from "ol/Observable";
 import {FormControl, FormGroup} from "@angular/forms";
 import {HavacilikService} from "../services/havacilik.service";
 import VectorSource from "ol/source/Vector";
+import {Cluster} from "ol/source";
+import CircleStyle from "ol/style/Circle";
+import Text from "ol/style/Text"
+import {boundingExtent} from "ol/extent";
 
 @Component({
     selector: 'app-tracking-map',
@@ -22,9 +26,9 @@ export class TrackingMapComponent implements OnInit {
     animating: boolean = false;
     lastTime: any;
     havaAraciLayer!: VectorLayer<any>;
-    havaAraciSource!:VectorSource;
+    havaAraciSource!: VectorSource;
     havaAraciLayerHistory!: VectorLayer<any>;
-    havaAraciSourceHistory!:VectorSource;
+    havaAraciSourceHistory!: VectorSource;
     position: any;
     geoMarker: any;
     distance: number = 0;
@@ -39,22 +43,37 @@ export class TrackingMapComponent implements OnInit {
     formGroup: FormGroup | undefined;
     featuresList: any[] = [];
     feature: any;
-    waterCollectionStyle:any;
-    suCukuruLayer!:VectorLayer<any>;
-    suCukuruSource!:VectorSource;
-    constructor(private havacilikService:HavacilikService) {
+    waterCollectionStyle: any;
+    suCukuruLayer!: VectorLayer<any>;
+    suCukuruSource!: VectorSource;
+    airVehicleLayer!: VectorLayer<any>;
+    airVehicleSource!: VectorSource;
+    waterCollectionCluster : any;
+    waterCollectionClusterLayer : any;
+    airVehicleCluster : any;
+    airVehicleClusterLayer : any;
+    styleCache:any = {};
+    styleCacheAir:any = {};
+
+    constructor(private havacilikService: HavacilikService) {
 
     }
 
     ngOnInit(): void {
         this.initSettings();
         this.addRoute()
-        this.havacilikService.getWaterCollectionPit().subscribe(resp=>{
-            resp.data.forEach((f:any)=>{
-                let points = f.nokta.replaceAll(",",".").split(":");
-                this.addWaterCollectionPits([parseFloat(points[0]),parseFloat(points[1])],f)
+        this.havacilikService.getWaterCollectionPit().subscribe(resp => {
+            resp.data.forEach((f: any) => {
+                let points = f.nokta.replaceAll(",", ".").split(":");
+                this.addWaterCollectionPits([parseFloat(points[0]), parseFloat(points[1])], f)
             })
         });
+        this.havacilikService.getActiveAirVehicles().subscribe(resp => {
+            resp.data.forEach((f: any) => {
+                let points = f.nokta.replaceAll(",", ".").split(":");
+                this.addAirVehicles([parseFloat(points[0]), parseFloat(points[1])], f);
+            })
+        })
     }
 
     initSettings() {
@@ -62,62 +81,170 @@ export class TrackingMapComponent implements OnInit {
             city: new FormControl<string | null>(null)
         });
         this.map = new CustomMap();
-        this.havaAraciSource = new VectorSource({
-            features:[]
+       /* this.havaAraciSource = new VectorSource({
+            features: []
         })
         this.havaAraciLayer = new VectorLayer<any>({
-            source:this.havaAraciSource
-        });
+            source: this.havaAraciSource
+        });*/
 
-        this.havaAraciSourceHistory= new VectorSource({
-            features:[]
+        this.havaAraciSourceHistory = new VectorSource({
+            features: []
         })
         this.havaAraciLayerHistory = new VectorLayer<any>({
-            source:this.havaAraciSourceHistory,
-            className:'havaAraclariHistory',
+            source: this.havaAraciSourceHistory,
+            className: 'havaAraclariHistory',
+            visible: false
+        });
+
+        this.airVehicleSource = new VectorSource({
+            features: []
+        })
+        this.airVehicleLayer = new VectorLayer<any>({
+            source: this.airVehicleSource,
+            className:'airVehicles2',
             visible:false
         });
 
-
         this.suCukuruSource = new VectorSource({
-            features:[],
+            features: [],
         })
-        this.suCukuruLayer=new VectorLayer<any>({
-            source:this.suCukuruSource,
-            className:'suCukuruLayer',
+        this.suCukuruLayer = new VectorLayer<any>({
+            source: this.suCukuruSource,
+            className: 'suCukuruLayer2',
+            visible: false,
+
+        })
+
+        this.waterCollectionCluster = new Cluster({
+            distance:100,
+            minDistance:30,
+            source:this.suCukuruSource
+        })
+        this.waterCollectionClusterLayer = new VectorLayer({
+            source: this.waterCollectionCluster,
             visible:false,
-
+            className: 'suCukuruLayer',
+            style: function (feature) {
+                const size = feature.get('features').length;
+                let style = that.styleCache[size];
+                if (!style) {
+                    style = new Style({
+                        image: new Icon({
+                            anchor: [0.5, 15],
+                            anchorXUnits: 'fraction',
+                            anchorYUnits: 'pixels',
+                            rotateWithView: true,
+                            scale:1.5,
+                            rotation: 0,
+                            src: '/assets/images/lake-32.png',//https://cdn-icons-png.flaticon.com/32/11015/11015750.png
+                        }),
+                        text:new Text({
+                            text: size.toString(),
+                            scale:1.5,
+                            fill: new Fill({
+                                color: '#000000',
+                            }),
+                        })
+                    });
+                    that.styleCache[size] = style;
+                }
+                return style;
+            },
         })
 
-        this.map.getMap().addLayer(this.suCukuruLayer);
+        this.airVehicleCluster = new Cluster({
+            distance:100,
+            minDistance:30,
+            source:this.airVehicleSource
+        })
+        this.airVehicleClusterLayer = new VectorLayer({
+            source: this.airVehicleCluster,
+            visible:false,
+            className: 'airVehicles',
+            style: function (feature) {
+                const size = feature.get('features').length;
+                let style = that.styleCacheAir[size];
+                if (!style) {
+                    style = new Style({
+                        image: new Icon({
+                            anchor: [0.5, 15],
+                            anchorXUnits: 'fraction',
+                            anchorYUnits: 'pixels',
+                            rotateWithView: true,
+                            scale:1.5,
+                            src: '/assets/images/heli-32.png',//https://cdn-icons-png.flaticon.com/64/1048/1048346.png
+                        }),
+                        text:new Text({
+                            text: size.toString(),
+                            scale:2,
+                            fill: new Fill({
+                                color: '#fdd506',
+                            }),
+                        })
+                    });
+                    that.styleCacheAir[size] = style;
+                }
+                return style;
+            },
+        })
+
+        this.map.getMap().addLayer(this.waterCollectionClusterLayer)
+        this.map.getMap().addLayer(this.airVehicleClusterLayer)
+        //this.map.getMap().addLayer(this.airVehicleLayer);
+        //this.map.getMap().addLayer(this.suCukuruLayer);
         this.map.getMap().addLayer(this.havaAraciLayerHistory);
-        let that=this;
-        this.map.select.on('select', function (selected:any) {
+
+        this.map.getMap().on('click', (e) => {
+            that.waterCollectionClusterLayer.getFeatures(e.pixel).then((clickedFeatures:any) => {
+                if (clickedFeatures.length) {
+                    const features = clickedFeatures[0].get('features');
+                    if (features.length > 1) {
+                        const extent = boundingExtent(
+                            features.map((r:any) => r.getGeometry().getCoordinates())
+                        );
+                        this.map.getMap().getView().fit(extent, {duration: 1000, padding: [50, 50, 50, 50]});
+                    }
+                }
+            });
+            that.airVehicleClusterLayer.getFeatures(e.pixel).then((clickedFeatures:any) => {
+                if (clickedFeatures.length) {
+                    const features = clickedFeatures[0].get('features');
+                    if (features.length > 1) {
+                        const extent = boundingExtent(
+                            features.map((r:any) => r.getGeometry().getCoordinates())
+                        );
+                        this.map.getMap().getView().fit(extent, {duration: 1000, padding: [50, 50, 50, 50]});
+                    }
+                }
+            });
+        });
+        let that = this;
+        this.map.select.on('select', function (selected: any) {
             if (selected.selected.length > 0) {
-                if(selected.deselected.length>0) {
+                if (selected.deselected.length > 0) {
                     that.clearHistory()
                 }
                 that.map.getMap().getLayers().forEach(f => {
-                    if (f instanceof VectorLayer && f.getClassName() == 'havaAraclari') {
-                        if(f.getVisible()){
+                    if (f instanceof VectorLayer && f.getClassName() == 'airVehicles') {
+                        if (f.getVisible()) {
                             that.addRouteHistory(that.route)
                         }
                     }
                 })
-            }
-            else{
+            } else {
                 that.listenerKey.forEach(f => unByKey(f))
                 that.clearHistory()
             }
         });
         this.planeSymbol = new Style({
             image: new Icon({
-                anchor: [0.5, 40],
+                anchor: [0.5, 20],
                 anchorXUnits: 'fraction',
                 anchorYUnits: 'pixels',
                 rotateWithView: true,
                 rotation: 0,
-                src: '/assets/images/heli-64.png',//https://cdn-icons-png.flaticon.com/64/1048/1048346.png
+                src: '/assets/images/heli-32.png',//https://cdn-icons-png.flaticon.com/64/1048/1048346.png
             }),
         });
         this.trackASymbol = new Style({
@@ -142,19 +269,20 @@ export class TrackingMapComponent implements OnInit {
             }),
         });
 
-        this.waterCollectionStyle= new Style({
+        this.waterCollectionStyle = new Style({
             image: new Icon({
                 anchor: [0.5, 15],
                 anchorXUnits: 'fraction',
                 anchorYUnits: 'pixels',
                 rotateWithView: true,
+                scale:0.7,
                 rotation: 0,
                 src: '/assets/images/lake-32.png',//https://cdn-icons-png.flaticon.com/32/11015/11015750.png
             }),
         });
     }
 
-    clearHistory(){
+    clearHistory() {
         this.map.getMap().getLayers().forEach(f => {
             if (f instanceof VectorLayer && f.getClassName() == 'havaAraclariHistory') {
                 f.getSource().clear()
@@ -162,14 +290,22 @@ export class TrackingMapComponent implements OnInit {
         })
     }
 
-    addWaterCollectionPits(points:number[],attr:any){
-        let waterCollection =  new Feature({
+    addWaterCollectionPits(points: number[], attr: any) {
+        let waterCollection = new Feature({
             geometry: new Point(points),
         })
-        waterCollection.setProperties({"Adı":attr.adi})
-        waterCollection.setProperties({"Tür":attr.turu})
+        waterCollection.setProperties(attr)
         waterCollection.setStyle(this.waterCollectionStyle);
         this.suCukuruSource.addFeatures([waterCollection])
+    }
+
+    addAirVehicles(points: number[], attr: any) {
+        let airVehicle = new Feature({
+            geometry: new Point(points),
+        })
+        airVehicle.setProperties(attr)
+        airVehicle.setStyle(this.planeSymbol);
+        this.airVehicleSource.addFeatures([airVehicle])
     }
 
     addRoute() {
@@ -1311,11 +1447,11 @@ export class TrackingMapComponent implements OnInit {
         this.lastMarker.setStyle(this.planeSymbol)
 
         let vector = new VectorLayer({
-            source:new VectorSource({
-                features:[this.lastMarker]
+            source: new VectorSource({
+                features: [this.lastMarker]
             }),
-            visible:false,
-            className:'havaAraclari'
+            visible: false,
+            className: 'havaAraclari'
         })
         this.map.getMap().addLayer(vector)
         //this.addFeatures([this.lastMarker]);
@@ -1342,12 +1478,12 @@ export class TrackingMapComponent implements OnInit {
         this.map.getMap().getLayers().forEach(f => {
             if (f instanceof VectorLayer && f.getClassName() == 'havaAraclariHistory') {
                 f.setVisible(true)
-                f.getSource().addFeatures([this.startMarker,this.geoMarker,this.feature]);
+                f.getSource().addFeatures([this.startMarker, this.geoMarker, this.feature]);
             }
         })
     }
 
-    removeFeatures(featureList: any[]){
+    removeFeatures(featureList: any[]) {
         this.map.getMap().getLayers().forEach(f => {
             if (f instanceof VectorLayer && f.getClassName() == 'ol-layer') {
                 this.havaAraciLayer = f;
@@ -1367,13 +1503,13 @@ export class TrackingMapComponent implements OnInit {
         let currentCoordinate = that.route.getCoordinateAt(that.distance > 1 ? 2 - that.distance : that.distance)
         that.position.setCoordinates(currentCoordinate);
         if (that.heartBeat) {
-            this.speedInput=20
+            this.speedInput = 20
             that.map.getMap().getView().setCenter(that.position.getCoordinates())//TODO ANLIK TAKİP İÇİN
             that.map.getMap().getView().setZoom(that.map.getMap().getView().getMaxZoom() - 4)
         }
         let vectorContext = getVectorContext(event);
         let style = that.trackASymbol;
-        style.getImage().setRotation(style.getImage().getRotation()+0.3)
+        style.getImage().setRotation(style.getImage().getRotation() + 0.3)
         //let styleVector = that.trackASymbol;
         vectorContext.setStyle(style);
         vectorContext.drawGeometry(that.position)

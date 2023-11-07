@@ -109,7 +109,6 @@ export class CustomMap {
                 new ZoomSlider(),
                 new FullScreen({source: 'fullscreen'}),
                 new MousePosition(),
-                new SideMenuBarMap({})
             ]
         });
 

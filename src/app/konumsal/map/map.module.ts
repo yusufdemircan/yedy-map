@@ -26,6 +26,12 @@ import {PanelMenuModule} from "primeng/panelmenu";
 import {ListboxModule} from "primeng/listbox";
 import { TestMapComponent } from './test-map/test-map.component';
 import {TableModule} from "primeng/table";
+import {SelectButtonModule} from "primeng/selectbutton";
+import {RadioButtonModule} from "primeng/radiobutton";
+import {DialogModule} from "primeng/dialog";
+import {ImageModule} from "primeng/image";
+import {InputTextModule} from "primeng/inputtext";
+import {InputTextareaModule} from "primeng/inputtextarea";
 
 
 @NgModule({
@@ -58,6 +64,12 @@ import {TableModule} from "primeng/table";
         PanelMenuModule,
         ListboxModule,
         TableModule,
+        SelectButtonModule,
+        RadioButtonModule,
+        DialogModule,
+        ImageModule,
+        InputTextModule,
+        InputTextareaModule,
     ],
     exports:[MapComponent]
 })

@@ -7,23 +7,21 @@ import {environment} from "../../../config/konumsal-config";
     providedIn: 'root'
 })
 export class HavacilikService {
+    headers= new HttpHeaders()
+        .set('content-type', 'application/json')
+        .set('Authorization','Basic YWRtaW46YWRtaW4=')
+        .set('Access-Control-Allow-Origin', '*')
+        .set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE')
+        .set('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type,Accept');
 
     constructor(private http: HttpClient) {
     }
 
     getWaterCollectionPit() {
+        return this.http.get<any>(environment.serverUrl + endPoints.havaAraci + '/suToplamaCukuru', {headers:this.headers});
+    }
 
-        const headers1= new HttpHeaders()
-            .set('content-type', 'application/json')
-            .set('Authorization','Basic YWRtaW46YWRtaW4=')
-            .set('Access-Control-Allow-Origin', '*')
-            .set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE')
-            .set('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type,Accept');
-
-        const head = {
-            "Authorization":"Basic YWRtaW46YWRtaW4"
-        }
-
-        return this.http.get<any>(environment.serverUrl + endPoints.havaAraci + '/suToplamaCukuru', {headers:headers1});
+    getActiveAirVehicles(){
+        return this.http.get<any>(environment.serverUrl + endPoints.havaAraci + '/aktifHavaAraci', {headers:this.headers});
     }
 }
